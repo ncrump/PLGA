@@ -2,9 +2,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # read data file
-dX,densX = np.loadtxt('density0X_EA_bigbox.xvg',skiprows=19,unpack=True)
-dY,densY = np.loadtxt('density0y_EA_bigbox.xvg',skiprows=19,unpack=True)
-dZ,densZ = np.loadtxt('density0Z_EA_bigbox.xvg',skiprows=19,unpack=True)
+dX,densX = np.loadtxt('densityX_nvt0_h2o_bigbox3x.xvg',skiprows=19,unpack=True)
+dY,densY = np.loadtxt('densityy_nvt0_h2o_bigbox3x.xvg',skiprows=19,unpack=True)
+dZ,densZ = np.loadtxt('densityZ_nvt0_h2o_bigbox3x.xvg',skiprows=19,unpack=True)
 
 # make plots
 plt.figure()

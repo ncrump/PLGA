@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # read data file
-t,PE,KE,E = np.loadtxt('energy_EA_nvttest.xvg',skiprows=21,unpack=True)
+t,PE,KE,E = np.loadtxt('energy_nvt0_h2o_bigbox3x.xvg',skiprows=21,unpack=True)
 
 
 # make time axis

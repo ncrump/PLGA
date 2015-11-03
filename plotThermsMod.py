@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # read data file
-t,T,P = np.loadtxt('therms0_EA_bigbox.xvg',skiprows=20,unpack=True)
+t,T,P = np.loadtxt('therms_nvt0_h2o_bigbox3x.xvg',skiprows=20,unpack=True)
 
 # plot running averages (0=no, 1=yes)
 avg = 1
@@ -31,7 +31,7 @@ if avg == 1:
     stdDev = np.std(T[int(0.5*indx)::])
     print 'Average T =',aveRun, 'StdDev P =',stdDev
     plt.annotate('Avg = %1.0f' % aveRun, fontsize=13, xy=(0.14,0.86), color='r',xycoords='figure fraction')
-    plt.annotate('Std = %1.2f' % stdDev, fontsize=13, xy=(0.14,0.55), color='r',xycoords='figure fraction')
+    plt.annotate('Std = %1.2f' % stdDev, fontsize=13, xy=(0.14,0.82), color='r',xycoords='figure fraction')
 
 # plot pressure vs time
 plt.subplot(2,1,2)
@@ -53,4 +53,4 @@ if avg == 1:
     stdDev = np.std(P[int(0.5*indx)::])
     print 'Average P =',aveRun, 'StdDev P =',stdDev
     plt.annotate('Avg = %1.0f' % aveRun, fontsize=13, xy=(0.14,0.42), color='r',xycoords='figure fraction')
-    plt.annotate('Std = %1.2f' % stdDev, fontsize=13, xy=(0.14,0.12), color='r',xycoords='figure fraction')
+    plt.annotate('Std = %1.2f' % stdDev, fontsize=13, xy=(0.14,0.38), color='r',xycoords='figure fraction')
