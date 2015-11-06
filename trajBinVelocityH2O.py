@@ -8,11 +8,11 @@ import matplotlib.pyplot as plt
 # set input parameters
 # -----------------------------------------------
 path = 'C:/Users/Code 8000/Desktop/Grad Research/LGA+H2O/Merged/H2O BigBox2x/Analysis/Middle Run 10ns/'
-fgro = 'nvt0_LGA+H2O_0.5Agap_bigbox2x_analysis_reimagedTRAJ.gro'
+fgro = 'nvt0_LGA+H2O_0.5Agap_bigbox3x_analysis_originalTRAJ.gro'
 lgaMOL = 256        # number of LGA molecules per frame
 lgaATM = 21         # number of LGA atoms per molecule
 h2oMOL = 8442       # number of H2O molecules per frame
-h2oATM = 2          # number of H2O atoms per molecule
+h2oATM = 3          # number of H2O atoms per molecule
 frames = 101        # number of frames in trajectory
 dtstep = 0.1        # time step between frames (ns)
 xbox   = 20.20600   # box length in x-direction (nm)
@@ -212,6 +212,8 @@ for i in range(numbin):
 avogad = 6.02214e23
 mLGAkg = (mLGA/1000)/avogad
 mH2Okg = (mH2O/1000)/avogad
+mLGAu  = mLGA*np.array(nTotLGA)
+mH2Ou  = mH2O*np.array(nTotH2O)
 volm3  = (dxbin*ybox*zbox)*(1e-27)
 rhoLGA = (mLGAkg*np.array(nTotLGA))/volm3
 rhoH2O = (mH2Okg*np.array(nTotH2O))/volm3
@@ -235,7 +237,7 @@ plt.vlines(bins,0,1)
 plt.vlines(intfce,0,1,'m',lw=2,linestyle='dashed')
 for i in range(numbin):
     plt.text(bins[i]+0.20*dxbin,0.5,str(i+1),fontsize=15,color='b')
-plt.savefig(path+'Images/0binsvel.png')
+plt.savefig(path+'Plots/0binsvel.png')
 plt.close()
 # plot mols per bin per frame
 plt.figure()
@@ -248,20 +250,35 @@ lim = plt.ylim()
 plt.ylim(lim[0]-lim[1]*0.01,lim[1]*factor)
 plt.grid()
 plt.legend(loc=1)
-plt.savefig(path+'Images/0molcountvel.png')
+plt.savefig(path+'Plots/0molcountvel.png')
+plt.close()
+# plot mass per bin per frame
+plt.figure()
+for i in range(numbin):
+    plt.plot(t,mLGAu[:,i],color[i]+'-',label='bin '+str(i+1))
+    plt.plot(t,mH2Ou[:,i],color[i]+'.-')
+plt.xlabel('Time (ns)',fontsize=15)
+plt.ylabel('Mass (g/mol)',fontsize=15)
+lim = plt.ylim()
+plt.ylim(lim[0]-lim[1]*0.01,lim[1]*factor)
+plt.grid()
+plt.legend(loc=1)
+plt.savefig(path+'Plots/0massvel.png')
 plt.close()
 # plot density per bin per frame
 plt.figure()
 for i in range(numbin):
     plt.plot(t,rhoLGA[:,i],color[i]+'-',label='bin '+str(i+1))
     plt.plot(t,rhoH2O[:,i],color[i]+'.-')
+plt.hlines(1340,0,t[-1],'k',linestyle='dashed',linewidth=2)
+plt.hlines(997,0,t[-1],'k',linestyle='dashed',linewidth=2)
 plt.xlabel('Time (ns)',fontsize=15)
 plt.ylabel('Density (kg/m$^3$)',fontsize=15)
 lim = plt.ylim()
 plt.ylim(lim[0]-lim[1]*0.01,lim[1]*factor)
 plt.grid()
 plt.legend(loc=1)
-plt.savefig(path+'Images/0densityvel.png')
+plt.savefig(path+'Plots/0densityvel.png')
 plt.close()
 # plot velocities
 for i in range(numbin):
@@ -288,49 +305,9 @@ for i in range(numbin):
     plt.hlines(0,0,t[-1],'k',linestyle='dashed')
     plt.annotate('Bin ='+'%2i'%(i+1),fontsize=fontsize,xy=(0.78,0.92),xycoords='figure fraction')
     plt.annotate('(nm/ps)',fontsize=14,xy=(0.05,0.93),xycoords='figure fraction')
-    plt.savefig(path+'Images/'+str(cnt+1)+'velocitytime.png')
+    plt.savefig(path+'Plots/'+str(cnt+1)+'velocitytime.png')
     plt.close()
     cnt += 1
-
-## alternate plot style
-#for i in range(numbin):
-#    plt.figure()
-#    plt.subplot(321)
-#    plt.plot(t,aveVxLGA[i],'b-',label='LGA')
-#    plt.ylabel('Ave Vx',fontsize=14)
-#    plt.hlines(0,0,t[-1],'k',linestyle='dashed')
-#    plt.legend(loc=1)
-#    plt.grid()
-#    plt.subplot(322)
-#    plt.plot(t,aveVxH2O[i],'g-',label='H2O')
-#    plt.hlines(0,0,t[-1],'k',linestyle='dashed')
-#    plt.legend(loc=1)
-#    plt.grid()
-#    plt.subplot(323)
-#    plt.plot(t,aveVyLGA[i],'b-')
-#    plt.ylabel('Ave Vy',fontsize=14)
-#    plt.hlines(0,0,t[-1],'k',linestyle='dashed')
-#    plt.grid()
-#    plt.subplot(324)
-#    plt.plot(t,aveVyH2O[i],'g-')
-#    plt.hlines(0,0,t[-1],'k',linestyle='dashed')
-#    plt.grid()
-#    plt.subplot(325)
-#    plt.plot(t,aveVzLGA[i],'b-')
-#    plt.ylabel('Ave Vz',fontsize=14)
-#    plt.xlabel('Time (ns)',fontsize=14)
-#    plt.hlines(0,0,t[-1],'k',linestyle='dashed')
-#    plt.grid()
-#    plt.subplot(326)
-#    plt.plot(t,aveVzH2O[i],'g-')
-#    plt.xlabel('Time (ns)',fontsize=14)
-#    plt.hlines(0,0,t[-1],'k',linestyle='dashed')
-#    plt.grid()
-#    plt.annotate('Bin ='+'%2i'%(i+1),fontsize=fontsize,xy=(0.78,0.92),xycoords='figure fraction')
-#    plt.annotate('(nm/ps)',fontsize=14,xy=(0.05,0.93),xycoords='figure fraction')
-#    plt.savefig(path+'Images/'+str(cnt+1)+'velocitytime.png')
-#    plt.close()
-#    cnt += 1
 
 # print done
 print cnt+3,'images saved'

@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 # set input parameters
 # -----------------------------------------------
 path = 'C:/Users/Code 8000/Desktop/Grad Research/LGA+H2O/Merged/H2O BigBox2x/Analysis/Middle Run 10ns/'
-fgro = 'nvt0_LGA+H2O_0.5Agap_bigbox2x_analysis_reimagedTRAJ.gro'
+fgro = 'nvt0_LGA+H2O_0.5Agap_bigbox3x_analysis_originalTRAJ.gro'
 lgaMOL  = 256        # number of LGA molecules per frame
 lgaATM  = 21         # number of LGA atoms per molecule
 h2oMOL  = 8442       # number of H2O molecules per frame
@@ -215,6 +215,17 @@ for i in range(numbin):
     msdYH2O.append(np.array(msdYBinH2O)[:,i])
     msdZH2O.append(np.array(msdZBinH2O)[:,i])
 
+# get radial msd (y+z) in interface bin only
+msdRLGA = msdYLGA[1]+msdZLGA[1]
+msdRH2O = msdYH2O[1]+msdZH2O[1]
+
+# get fits to lines for diffusion coefficient
+mlga,blga = np.polyfit(t[strmsd+1::],msdXLGA[1],1)
+mh2o,bh2o = np.polyfit(t[strmsd+1::],msdXH2O[1],1)
+# get diffusion coefficient (in m^2/s)
+Dlga = (mlga/6.0)*10**-9
+Dh2o = (mh2o/6.0)*10**-9
+
 # when no molecules exist in bin set it to zero
 for i in range(numbin):
     msdXLGA[i][np.where(np.isnan(msdXLGA[i]) == True)] = 0
@@ -243,7 +254,7 @@ plt.vlines(bins,0,1)
 plt.vlines(intfce,0,1,'m',lw=2,linestyle='dashed')
 for i in range(numbin):
     plt.text(bins[i]+0.20*dxbin,0.5,str(i+1),fontsize=15,color='b')
-plt.savefig(path+'Images/0binsmsd.png')
+plt.savefig(path+'Plots/0binsmsd.png')
 plt.close()
 # plot mols per bin at frame zero to check it is constant in each iteration
 # note: this is because mols are always associated to their starting bin for msd
@@ -257,7 +268,7 @@ lim = plt.ylim()
 plt.ylim(lim[0]-lim[1]*0.01,lim[1]*factor)
 plt.grid()
 plt.legend(loc=1)
-plt.savefig(path+'Images/0molcountmsd.png')
+plt.savefig(path+'Plots/0molcountmsd.png')
 plt.close()
 # plot msd
 for i in range(numbin):
@@ -290,37 +301,43 @@ for i in range(numbin):
     plt.annotate('Bin ='+'%2i'%(i+1),fontsize=fontsize,xy=(0.78,0.92),xycoords='figure fraction')
     plt.annotate('(nm$^2$)',fontsize=14,xy=(0.05,0.93),xycoords='figure fraction')
     if strtime == 'yes':
-        plt.savefig(path+'Images/'+str(cnt+1)+'msdtime_f'+str(strmsd)+'.png')
+        plt.savefig(path+'Plots/'+str(cnt+1)+'msdtime_f'+str(strmsd)+'.png')
     else:
-        plt.savefig(path+'Images/'+str(cnt+1)+'msdtime_fprev.png')
+        plt.savefig(path+'Plots/'+str(cnt+1)+'msdtime_fprev.png')
     plt.close()
     cnt += 1
-
-## alternate plot style
-#for i in range(numbin):
-#    plt.figure()
-#    plt.subplot(311)
-#    plt.plot(t[strmsd+1::],msdXLGA[i],'b-',label='LGA')
-#    plt.plot(t[strmsd+1::],msdXH2O[i],'g-',label='H2O')
-#    plt.legend(loc=9,bbox_to_anchor=(0.5,1.3),ncol=2)
-#    plt.grid()
-#    plt.ylabel('MSD-x',fontsize=14)
-#    plt.subplot(312)
-#    plt.plot(t[strmsd+1::],msdYLGA[i],'b-')
-#    plt.plot(t[strmsd+1::],msdYH2O[i],'g-')
-#    plt.grid()
-#    plt.ylabel('MSD-y',fontsize=14)
-#    plt.subplot(313)
-#    plt.plot(t[strmsd+1::],msdZLGA[i],'b-')
-#    plt.plot(t[strmsd+1::],msdZH2O[i],'g-')
-#    plt.grid()
-#    plt.ylabel('MSD-z',fontsize=14)
-#    plt.xlabel('Time (ns)',fontsize=15)
-#    plt.annotate('Bin ='+'%2i'%(i+1),fontsize=fontsize,xy=(0.78,0.92),xycoords='figure fraction')
-#    plt.annotate('(nm$^2$)',fontsize=14,xy=(0.05,0.93),xycoords='figure fraction')
-#    plt.savefig(path+'Images/'+str(cnt+1)+'msdtime.png')
-#    plt.close()
-#    cnt += 1
+# plot lateral and radial msd for interface bin only
+plt.figure()
+plt.subplot(221)
+plt.plot(t[strmsd+1::],msdXLGA[1],'b-',label='LGA')
+plt.plot(t[strmsd+1::],mlga*t[strmsd+1::]+blga,'r-')
+plt.ylabel('MSD-x',fontsize=14)
+plt.legend(loc=2)
+plt.grid()
+plt.subplot(222)
+plt.plot(t[strmsd+1::],msdXH2O[1],'g-',label='H2O')
+plt.plot(t[strmsd+1::],mh2o*t[strmsd+1::]+bh2o,'r-')
+plt.legend(loc=2)
+plt.grid()
+plt.subplot(223)
+plt.plot(t[strmsd+1::],msdRLGA,'b-')
+plt.ylabel('MSD-yz',fontsize=14)
+plt.xlabel('Time (ns)',fontsize=14)
+plt.grid()
+plt.subplot(224)
+plt.plot(t[strmsd+1::],msdRH2O,'g-')
+plt.xlabel('Time (ns)',fontsize=14)
+plt.grid()
+plt.annotate('Bin ='+'%2i'%(2),fontsize=fontsize,xy=(0.78,0.92),xycoords='figure fraction')
+plt.annotate('(nm$^2$)',fontsize=14,xy=(0.05,0.93),xycoords='figure fraction')
+plt.annotate('D=%6.3e'%Dlga+' (m$^2$/s)',fontsize=12,xy=(0.25,0.56),xycoords='figure fraction')
+plt.annotate('D=%6.3e'%Dh2o+' (m$^2$/s)',fontsize=12,xy=(0.67,0.56),xycoords='figure fraction')
+if strtime == 'yes':
+    plt.savefig(path+'Plots/'+str(cnt+1)+'msdtime_f'+str(strmsd)+'.png')
+else:
+    plt.savefig(path+'Plots/'+str(cnt+1)+'msdtime_fprev.png')
+plt.close()
+cnt += 1
 
 # print done
 print cnt+2,'images saved'
