@@ -7,8 +7,8 @@ import matplotlib.pyplot as plt
 
 # set input parameters
 # -----------------------------------------------
-path = 'C:/Users/Code 8000/Desktop/Grad Research/LGA+EA/Merged/EA BigBox3x/Analysis/1Middle Run 10ns/'
-fgro = 'nvt1_LGA+EA_0.5Agap_eabigbox3x_analysis_reimagedTRAJ.gro'
+path = 'Data/'
+fgro = 'nvt1_LGA+EA_0.5Agap_eabigbox3x_analysis_originalTRAJ.gro'
 lgaMOL = 256        # number of LGA molecules per frame
 lgaATM = 21         # number of LGA atoms per molecule
 eeeMOL = 1620       # number of EA molecules per frame

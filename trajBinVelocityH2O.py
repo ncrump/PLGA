@@ -7,8 +7,8 @@ import matplotlib.pyplot as plt
 
 # set input parameters
 # -----------------------------------------------
-path = 'C:/Users/Code 8000/Desktop/Grad Research/LGA+H2O/Merged/H2O BigBox2x/Analysis/Middle Run 10ns/'
-fgro = 'nvt0_LGA+H2O_0.5Agap_bigbox3x_analysis_originalTRAJ.gro'
+path = 'Data/'
+fgro = 'nvt1_LGA+H2O_0.5Agap_bigbox3x_analysis_originalTRAJ.gro'
 lgaMOL = 256        # number of LGA molecules per frame
 lgaATM = 21         # number of LGA atoms per molecule
 h2oMOL = 8442       # number of H2O molecules per frame

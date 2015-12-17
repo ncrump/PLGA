@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 
 # set input parameters
 # -----------------------------------------------
-path = 'C:/Users/Code 8000/Desktop/Grad Research/LGA+EA/Merged/EA BigBox3x/Analysis/1Middle Run 10ns/'
+path = 'Data/'
 fgro = 'nvt1_LGA+EA_0.5Agap_eabigbox3x_analysis_originalTRAJ.gro'
 lgaMOL  = 256        # number of LGA molecules per frame
 lgaATM  = 21         # number of LGA atoms per molecule
@@ -121,27 +121,28 @@ pxcm = np.array(pxcm)
 pycm = np.array(pycm)
 pzcm = np.array(pzcm)
 
-# get index list for sorting and binning along x
-indx  = []
-Nmol  = lgaMOL+eeeMOL
-xsort = np.sort(pxcm[0:Nmol])
-for i in range(Nmol):
-    k = np.where(pxcm[0:Nmol] == xsort[i])[0][0]
-    indx.append(k)
-
-# define new arrays to hold re-ordered molecules
+# re-order molecules in arrays per frame
+Nmol = lgaMOL+eeeMOL
 resf = np.chararray((frames,Nmol),itemsize=12)
 xcmf = np.zeros((frames,Nmol))
 ycmf = np.zeros((frames,Nmol))
 zcmf = np.zeros((frames,Nmol))
-
-# re-order molecules in each frame to match order of first frame sorted along x
+indx = 0
+# loop over frame
 for i in range(frames):
+    # loop over molecules
     for j in range(Nmol):
-        resf[i,j] = res[indx[j]  + i*Nmol]
-        xcmf[i,j] = pxcm[indx[j] + i*Nmol]
-        ycmf[i,j] = pycm[indx[j] + i*Nmol]
-        zcmf[i,j] = pzcm[indx[j] + i*Nmol]
+        resf[i,j] = res[indx]
+        xcmf[i,j] = pxcm[indx]
+        ycmf[i,j] = pycm[indx]
+        zcmf[i,j] = pzcm[indx]
+        indx += 1
+
+# get bins along x
+binstrt = intfce - 0.5*numbin*dxbin
+binfnsh = intfce + 0.5*numbin*dxbin
+bins    = np.linspace(binstrt,binfnsh,numbin+1)
+binNum  = ((xcmf[0]-binstrt)/dxbin).astype(int)
 
 # get MSD in each bin per frame per LGA/EA
 msdXBinLGA,msdYBinLGA,msdZBinLGA,nTotLGA  = [],[],[],[]
@@ -149,10 +150,6 @@ msdXBinEEE,msdYBinEEE,msdZBinEEE,nTotEEE  = [],[],[],[]
 msdxL,msdyL,msdzL = np.zeros(numbin),np.zeros(numbin),np.zeros(numbin)
 msdxE,msdyE,msdzE = np.zeros(numbin),np.zeros(numbin),np.zeros(numbin)
 nL,nE             = np.zeros(numbin),np.zeros(numbin)
-binstrt = intfce - 0.5*numbin*dxbin
-binfnsh = intfce + 0.5*numbin*dxbin
-bins    = np.linspace(binstrt,binfnsh,numbin+1)
-binNum  = ((xcmf[0]-binstrt)/dxbin).astype(int)
 # loop over frames
 for i in range(strmsd,frames-1):
     msdxL,msdyL,msdzL,nL = msdxL*0,msdyL*0,msdzL*0,nL*0

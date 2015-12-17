@@ -7,8 +7,8 @@ import matplotlib.pyplot as plt
 
 # set input parameters
 # -----------------------------------------------
-path = 'C:/Users/Code 8000/Desktop/Grad Research/LGA+H2O/Merged/H2O BigBox2x/Analysis/Middle Run 10ns/'
-fgro = 'nvt0_LGA+H2O_0.5Agap_bigbox3x_analysis_originalTRAJ.gro'
+path = 'Data/'
+fgro = 'nvt1_LGA+H2O_0.5Agap_bigbox3x_analysis_originalTRAJ.gro'
 lgaMOL  = 256        # number of LGA molecules per frame
 lgaATM  = 21         # number of LGA atoms per molecule
 h2oMOL  = 8442       # number of H2O molecules per frame
@@ -120,27 +120,28 @@ pxcm = np.array(pxcm)
 pycm = np.array(pycm)
 pzcm = np.array(pzcm)
 
-# get index list for sorting and binning along x
-indx  = []
-Nmol  = lgaMOL+h2oMOL
-xsort = np.sort(pxcm[0:Nmol])
-for i in range(Nmol):
-    k = np.where(pxcm[0:Nmol] == xsort[i])[0][0]
-    indx.append(k)
-
-# define new arrays to hold re-ordered molecules
+# re-order molecules in arrays per frame
+Nmol = lgaMOL+h2oMOL
 resf = np.chararray((frames,Nmol),itemsize=12)
 xcmf = np.zeros((frames,Nmol))
 ycmf = np.zeros((frames,Nmol))
 zcmf = np.zeros((frames,Nmol))
-
-# re-order molecules in each frame to match order of first frame sorted along x
+indx = 0
+# loop over frame
 for i in range(frames):
+    # loop over molecules
     for j in range(Nmol):
-        resf[i,j] = res[indx[j]  + i*Nmol]
-        xcmf[i,j] = pxcm[indx[j] + i*Nmol]
-        ycmf[i,j] = pycm[indx[j] + i*Nmol]
-        zcmf[i,j] = pzcm[indx[j] + i*Nmol]
+        resf[i,j] = res[indx]
+        xcmf[i,j] = pxcm[indx]
+        ycmf[i,j] = pycm[indx]
+        zcmf[i,j] = pzcm[indx]
+        indx += 1
+
+# get bins along x
+binstrt = intfce - 0.5*numbin*dxbin
+binfnsh = intfce + 0.5*numbin*dxbin
+bins    = np.linspace(binstrt,binfnsh,numbin+1)
+binNum  = ((xcmf[0]-binstrt)/dxbin).astype(int)
 
 # get MSD in each bin per frame per LGA/H2O
 msdXBinLGA,msdYBinLGA,msdZBinLGA,nTotLGA  = [],[],[],[]
@@ -148,10 +149,6 @@ msdXBinH2O,msdYBinH2O,msdZBinH2O,nTotH2O  = [],[],[],[]
 msdxL,msdyL,msdzL = np.zeros(numbin),np.zeros(numbin),np.zeros(numbin)
 msdxH,msdyH,msdzH = np.zeros(numbin),np.zeros(numbin),np.zeros(numbin)
 nL,nH             = np.zeros(numbin),np.zeros(numbin)
-binstrt = intfce - 0.5*numbin*dxbin
-binfnsh = intfce + 0.5*numbin*dxbin
-bins    = np.linspace(binstrt,binfnsh,numbin+1)
-binNum  = ((xcmf[0]-binstrt)/dxbin).astype(int)
 # loop over frames
 for i in range(strmsd,frames-1):
     msdxL,msdyL,msdzL,nL = msdxL*0,msdyL*0,msdzL*0,nL*0
